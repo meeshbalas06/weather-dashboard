@@ -26,65 +26,14 @@ jobs:
         id: weather
         env:
           API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
-        run: |
-          python -c "
-import requests
-import os
-from datetime import datetime
-import ssl
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-ssl._create_default_https_context = ssl._create_unverified_context
-
-API_KEY = os.getenv('API_KEY')
-CITY = 'Ajax'
-COUNTRY_CODE = 'CA'
-UNITS = 'metric'
-BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
-
-params = {
-    'q': f'{CITY},{COUNTRY_CODE}',
-    'appid': API_KEY,
-    'units': UNITS
-}
-
-response = requests.get(BASE_URL, params=params, verify=False)
-data = response.json()
-
-city = data['name']
-country = data['sys']['country']
-temperature = data['main']['temp']
-feels_like = data['main']['feels_like']
-humidity = data['main']['humidity']
-pressure = data['main']['pressure']
-wind_speed = data['wind']['speed']
-description = data['weather'][0]['description'].capitalize()
-current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-weather_info = f'''
-## 🌍 Weather Report - Ajax, Ontario, Canada
-**Date/Time:** {current_time}
-
-| Metric | Value |
-|--------|-------|
-| 🌡️ Temperature | {temperature}°C (feels like {feels_like}°C) |
-| 💧 Humidity | {humidity}% |
-| 🌪️ Wind Speed | {wind_speed} m/s |
-| 🎯 Pressure | {pressure} hPa |
-| ☁️ Condition | {description} |
-'''
-
-print('WEATHER_INFO<<EOF')
-print(weather_info)
-print('EOF')
-          "
+        run: python scripts/fetch_weather.py >> $GITHUB_OUTPUT
       
       - name: Create GitHub Issue
         uses: actions/github-script@v6
         with:
           script: |
-            const weatherInfo = `${{ steps.weather.outputs.WEATHER_INFO }}`;
+            const fs = require('fs');
+            const weatherInfo = fs.readFileSync('weather_report.txt', 'utf8');
             
             github.rest.issues.create({
               owner: context.repo.owner,
