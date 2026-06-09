@@ -2,6 +2,10 @@ import requests
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import ssl
+
+# Fix SSL certificate verification error on Windows
+ssl._create_default_https_context = ssl._create_unverified_context
 
 # Load environment variables from .env file
 load_dotenv()
