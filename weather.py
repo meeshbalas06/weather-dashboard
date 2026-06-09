@@ -1,11 +1,16 @@
+import ssl
+import urllib3
+
+# Disable SSL verification warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Fix SSL certificate verification error
+ssl._create_default_https_context = ssl._create_unverified_context
+
 import requests
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-import ssl
-
-# Fix SSL certificate verification error on Windows
-ssl._create_default_https_context = ssl._create_unverified_context
 
 # Load environment variables from .env file
 load_dotenv()
@@ -34,7 +39,7 @@ def fetch_weather():
     }
     
     try:
-        response = requests.get(BASE_URL, params=params)
+        response = requests.get(BASE_URL, params=params, verify=False)
         response.raise_for_status()  # Raise an exception for bad status codes
         return response.json()
     except requests.exceptions.RequestException as e:
