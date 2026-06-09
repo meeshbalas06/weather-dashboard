@@ -7,7 +7,7 @@ from datetime import datetime
 load_dotenv()
 
 # Configuration
-API_KEY = os.getenv('API_KEY')
+API_KEY = "d6d57034c58d45d411798c6b81b6066a"
 CITY = "Ajax"
 COUNTRY_CODE = "CA"
 UNITS = "metric"  # Use Celsius
